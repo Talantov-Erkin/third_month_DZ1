@@ -83,6 +83,45 @@
         </div>
     </div>
 
+    <div class="register_block">
+        <div class="container">
+            <h3>Homework 5</h3>
+            <form id="register_form" class="form_register">
+                <label>
+                    <input type="text" name="name" placeholder="Имя" required>
+                </label>
+                <label>
+                    <input type="email" name="email" placeholder="Email" required>
+                </label>
+                <label>
+                    <input type="password" name="password" placeholder="Пароль" required>
+                </label>
+                <label>
+                    <input type="number" name="age" placeholder="Возраст" required>
+                </label>
+                <label>
+                    <textarea name="bio" placeholder="О себе"></textarea>
+                </label>
+                <label>
+                    <select name="gender">
+                        <option value="male">Мужской</option>
+                        <option value="female">Женский</option>
+                        <option value="other">Другое</option>
+                    </select>
+                </label>
+                <label class="checkbox_label">
+                    <input type="checkbox" id="agreement" name="agreement">
+                    Согласен на обработку персональных данных
+                </label>
+                <div class="form_buttons">
+                    <button type="submit" class="btn" data-format="json">Отправить как JSON</button>
+                    <button type="submit" class="btn" data-format="formdata">Отправить как FormData</button>
+                </div>
+                <span class="checker" id="register_result"></span>
+            </form>
+        </div>
+    </div>
+
     <div class="footer">
         <div class="container">
             <a href="https://www.instagram.com/baked_toastt/" target="_blank">

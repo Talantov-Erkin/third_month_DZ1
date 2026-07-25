@@ -1,17 +1,30 @@
 [
   {
-    "name": "",
-    "age": 0,
-    "photo": "url"
+    "name": "Артём Волков",
+    "age": 27,
+    "class": "Разработчик",
+    "bio": "Пишет код по ночам и не боится регулярных выражений.",
+    "person_photo": "https://i.pravatar.cc/300?img=12"
   },
   {
-    "name": "",
-    "age": 0,
-    "photo": "url"
+    "name": "Дана Ким",
+    "age": 24,
+    "class": "Дизайнер",
+    "bio": "Обожает тёмные темы и аккуратную типографику.",
+    "person_photo": "https://i.pravatar.cc/300?img=32"
   },
   {
-    "name": "",
-    "age": 0,
-    "photo": "url"
+    "name": "Максим Ли",
+    "age": 30,
+    "class": "Тестировщик",
+    "bio": "Находит баги там, где их никто не ищет.",
+    "person_photo": "https://i.pravatar.cc/300?img=51"
+  },
+  {
+    "name": "Алина Смирнова",
+    "age": 22,
+    "class": "Frontend-разработчик",
+    "bio": "Знает наизусть все флексбоксовые свойства.",
+    "person_photo": "https://i.pravatar.cc/300?img=47"
   }
 ]
