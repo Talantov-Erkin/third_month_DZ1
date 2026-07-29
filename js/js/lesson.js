@@ -1,8 +1,10 @@
+// ================= PHONE CHECKER =================
 
 const phoneInput = document.querySelector('#phone_input')
 const phoneButton = document.querySelector('#phone_button')
 const phoneResult = document.querySelector('#phone_result')
 
+// Формат: +996 XXX XX-XX-XX
 const phoneRegex = /^\+996\s\d{3}\s\d{2}-\d{2}-\d{2}$/
 
 phoneButton.onclick = () => {
@@ -24,48 +26,43 @@ phoneButton.onclick = () => {
 }
 
 
+// ================= TAB SLIDER (делегирование событий + classList) =================
 
 const tabItemsBlock = document.querySelector('.tab_content_items')
 const tabItems = document.querySelectorAll('.tab_content_item')
 const tabBlocks = document.querySelectorAll('.tab_content_block')
- 
-let currentTabIndex = 0 
- 
+
+// изначально показываем только первый блок, остальные прячем
 const showTabBlock = (index) => {
     tabBlocks.forEach((block, i) => {
         block.style.display = i === index ? 'flex' : 'none'
     })
- 
-    tabItems.forEach((item, i) => {
-        item.classList.toggle('tab_content_item_active', i === index)
-    })
- 
-    currentTabIndex = index
 }
- 
+
 showTabBlock(0)
- 
+
+// делегирование событий: один обработчик на родителе вместо
+// назначения обработчика каждой кнопке отдельно
 tabItemsBlock.addEventListener('click', (event) => {
     const clickedItem = event.target.closest('.tab_content_item')
     if (!clickedItem) return
- 
+
     const index = Array.from(tabItems).indexOf(clickedItem)
+
+    tabItems.forEach((item) => item.classList.remove('tab_content_item_active'))
+    clickedItem.classList.add('tab_content_item_active')
+
     showTabBlock(index)
 })
- 
-setInterval(() => {
-    const nextIndex = currentTabIndex < tabItems.length - 1 ? currentTabIndex + 1 : 0
-    showTabBlock(nextIndex)
-}, 4000)
 
 
-
+// ================= CONVERTER (som / usd / eur) =================
 
 const somInput = document.querySelector('#som')
 const usdInput = document.querySelector('#usd')
 const eurInput = document.querySelector('#eur')
 
-let rates = null 
+let rates = null // сюда попадут курсы из converter.json
 
 const fetchRates = async () => {
     try {
@@ -117,12 +114,12 @@ eurInput.oninput = () => {
 }
 
 
-
+// ================= CARD SWITCHER =================
 
 const card = document.querySelector('.card')
 const btnPrev = document.querySelector('#btn-prev')
 const btnNext = document.querySelector('#btn-next')
- 
+
 const cardsData = [
     { title: 'Совет #1', text: 'let и const почти всегда лучше var' },
     { title: 'Совет #2', text: 'Стрелочные функции не имеют своего this' },
@@ -130,34 +127,36 @@ const cardsData = [
     { title: 'Совет #4', text: 'Promise.all падает при первой же ошибке' },
     { title: 'Совет #5', text: 'classList.toggle переключает класс туда-обратно' }
 ]
- 
+
 let cardIndex = 0
- 
+
 const renderCard = () => {
     const { title, text } = cardsData[cardIndex]
     card.innerHTML = `<p>${title}</p><span>${text}</span>`
 }
- 
+
 renderCard()
- 
+
 btnNext.onclick = () => {
     cardIndex = cardIndex < cardsData.length - 1 ? cardIndex + 1 : 0
     renderCard()
 }
- 
+
 btnPrev.onclick = () => {
     cardIndex = cardIndex > 0 ? cardIndex - 1 : cardsData.length - 1
     renderCard()
 }
 
 
-
+// ================= WEATHER =================
 
 const cityInput = document.querySelector('.cityName')
 const searchButton = document.querySelector('#search')
 const cityOutput = document.querySelector('.city')
 const tempOutput = document.querySelector('.temp')
 
+// Open-Meteo — бесплатное API без ключа: сначала находим координаты города,
+// потом по ним запрашиваем текущую погоду
 const fetchWeather = async (cityName) => {
     try {
         const geoResponse = await fetch(
