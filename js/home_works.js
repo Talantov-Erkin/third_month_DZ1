@@ -1,10 +1,12 @@
-
+// ================= HOMEWORK 1 (part 1) — GMAIL VALIDATION =================
 
 const gmailInput = document.querySelector('#gmail_input')
 const gmailButton = document.querySelector('#gmail_button')
 const gmailResult = document.querySelector('#gmail_result')
 
-
+// Регулярное выражение для валидации gmail почты:
+// - латинские буквы, цифры, точки, подчеркивания, % + -
+// - обязательно @gmail.com в конце
 const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/
 
 gmailButton.onclick = () => {
@@ -26,7 +28,7 @@ gmailButton.onclick = () => {
 }
 
 
-
+// ================= HOMEWORK 1 (part 2) — RECURSIVE MOVEMENT =================
 
 const parentBlock = document.querySelector('.parent_block')
 const childBlock = document.querySelector('.child_block')
@@ -36,17 +38,19 @@ const parentHeight = parentBlock.clientHeight
 const childWidth = childBlock.clientWidth
 const childHeight = childBlock.clientHeight
 
-const step = 5 
+const step = 5 // на сколько пикселей сдвигаем блок за один шаг
 
-
+// границы, дальше которых блок двигаться не может (по X и по Y)
 const maxLeft = parentWidth - childWidth
 const maxTop = parentHeight - childHeight
 
 let x = 0
 let y = 0
-let direction = 'right' 
+let direction = 'right' // текущее направление движения по периметру
 
-
+// Рекурсивная функция: сама себя вызывает через setTimeout,
+// двигая блок по периметру родительского блока (право -> вниз -> лево -> вверх)
+// и никогда не выходя за его границы
 const moveChildBlock = () => {
     childBlock.style.left = `${x}px`
     childBlock.style.top = `${y}px`
@@ -76,14 +80,14 @@ const moveChildBlock = () => {
 moveChildBlock()
 
 
-
+// ================= HOMEWORK 2 — STOPWATCH (СЕКУНДОМЕР) =================
 
 const secondsDisplay = document.querySelector('#seconds')
 const startButton = document.querySelector('#start')
 const stopButton = document.querySelector('#stop')
 const resetButton = document.querySelector('#reset')
 
-let elapsedTime = 0 
+let elapsedTime = 0 // накопленное время в миллисекундах
 let startTimestamp = null
 let timerId = null
 
@@ -111,7 +115,7 @@ const tick = () => {
 }
 
 startButton.onclick = () => {
-    if (timerId) return
+    if (timerId) return // не запускаем повторно, если уже идёт
 
     startTimestamp = Date.now() - elapsedTime
     timerId = requestAnimationFrame(tick)
@@ -130,6 +134,9 @@ resetButton.onclick = () => {
 }
 
 
+// ================= PROMISE С ДВУМЯ .then =================
+
+// Первый промис случайным образом либо выполняется, либо отклоняется
 const firstPromise = new Promise((resolve, reject) => {
     const isSuccess = Math.random() > 0.5
 
@@ -144,8 +151,11 @@ const firstPromise = new Promise((resolve, reject) => {
 
 firstPromise
     .then(
+        // сработает, если firstPromise выполнился (resolve)
         (result) => {
             console.log(result)
+
+            // второй промис тоже случайным образом либо выполняется, либо отклоняется
             return new Promise((resolve, reject) => {
                 const isSuccess = Math.random() > 0.5
 
@@ -158,6 +168,7 @@ firstPromise
                 }, 1000)
             })
         },
+        // сработает, если firstPromise отклонился (reject)
         (error) => {
             console.log(error)
 
@@ -175,11 +186,14 @@ firstPromise
         }
     )
     .then(
+        // сработает, если второй промис выполнился (resolve)
         (result) => console.log(result),
+        // сработает, если второй промис отклонился (reject)
         (error) => console.log(error)
     )
 
 
+// ================= DELAY (используется в заданиях ниже) =================
 
 const delay = (value, ms, shouldFail = false) => {
     return new Promise((resolve, reject) => {
@@ -190,17 +204,20 @@ const delay = (value, ms, shouldFail = false) => {
 }
 
 
+// ================= ЗАДАНИЕ 1 — ЦЕПОЧКА ИЗ ТРЁХ DELAY (.then/.catch/.finally) =================
 
 delay(1, 500)
     .then((value) => {
         console.log('[Задание 1] Шаг 1 выполнен, значение:', value)
-        return delay(value + 1, 500, true)
+        return delay(value + 1, 500, true) // второй delay должен упасть
     })
     .then((value) => {
+        // этот шаг не выполнится, т.к. предыдущий delay упал
         console.log('[Задание 1] Шаг 2 выполнен, значение:', value)
         return delay(value + 1, 500)
     })
     .then((value) => {
+        // этот шаг тоже не выполнится
         console.log('[Задание 1] Шаг 3 выполнен, значение:', value)
     })
     .catch((error) => {
@@ -211,17 +228,18 @@ delay(1, 500)
     })
 
 
+// ================= ЗАДАНИЕ 2 — ТА ЖЕ ЦЕПОЧКА ЧЕРЕЗ async/await =================
 
 const runChainAsync = async () => {
     try {
         const value1 = await delay(1, 500)
         console.log('[Задание 2] Шаг 1 выполнен, значение:', value1)
 
-        const value2 = await delay(value1 + 1, 500, true) 
-        console.log('[Задание 2] Шаг 2 выполнен, значение:', value2)
+        const value2 = await delay(value1 + 1, 500, true) // должен упасть
+        console.log('[Задание 2] Шаг 2 выполнен, значение:', value2) // не выполнится
 
         const value3 = await delay(value2 + 1, 500)
-        console.log('[Задание 2] Шаг 3 выполнен, значение:', value3)
+        console.log('[Задание 2] Шаг 3 выполнен, значение:', value3) // не выполнится
     } catch (error) {
         console.log('[Задание 2] Поймали ошибку в catch:', error.message)
     } finally {
@@ -231,7 +249,8 @@ const runChainAsync = async () => {
 
 runChainAsync()
 
-
+// --- Усложнение: последовательная обработка массива из 4 значений ---
+// Одна ошибка не должна прерывать обработку остальных элементов
 
 const processArraySequentially = async (values) => {
     const results = []
@@ -242,7 +261,7 @@ const processArraySequentially = async (values) => {
             const result = await delay(value, 300, shouldFail)
             results.push({ value: result, error: null })
         } catch (error) {
-            
+            // ошибка конкретного элемента не прерывает цикл
             results.push({ value: null, error: error.message })
         }
     }
@@ -255,26 +274,28 @@ processArraySequentially([10, 20, 30, 40]).then((results) => {
 })
 
 
+// ================= ЗАДАНИЕ 3 — ПАРАЛЛЕЛЬНЫЕ DELAY =================
 
-
-
+// --- Promise.all: падает при первой же ошибке ---
 const runPromiseAll = async () => {
     try {
         const results = await Promise.all([
             delay('A', 300),
-            delay('B', 600, true),
+            delay('B', 600, true), // этот упадёт
             delay('C', 900),
             delay('D', 1200)
         ])
         console.log('[Задание 3 / Promise.all] Все выполнились:', results)
     } catch (error) {
+        // Promise.all отклоняется целиком при первой же ошибке,
+        // остальные результаты теряются, даже если они успешны
         console.log('[Задание 3 / Promise.all] Упал из-за первой ошибки:', error.message)
     }
 }
 
 runPromiseAll()
 
-
+// --- Promise.allSettled: делим результаты на успешные и провалившиеся ---
 const runPromiseAllSettled = async () => {
     const results = await Promise.allSettled([
         delay('A', 300),
@@ -297,15 +318,17 @@ const runPromiseAllSettled = async () => {
 
 runPromiseAllSettled()
 
-
+// --- Promise.race: гонка между "полезным" delay и "таймаутом" ---
 const runPromiseRace = async () => {
     try {
         const result = await Promise.race([
             delay('полезные данные', 2000),
-            delay('таймаут', 500, true)
+            delay('таймаут', 500, true) // этот завершится быстрее и с ошибкой
         ])
         console.log('[Задание 3 / Promise.race] Победитель:', result)
     } catch (error) {
+        // race завершается тем промисом, который финишировал первым,
+        // здесь первым финиширует "таймаут" с ошибкой
         console.log('[Задание 3 / Promise.race] Гонку выиграл таймаут с ошибкой:', error.message)
     }
 }
@@ -313,6 +336,7 @@ const runPromiseRace = async () => {
 runPromiseRace()
 
 
+// ================= ЗАДАНИЕ — ПЕРСОНАЖИ ИЗ characters.json =================
 
 const charactersList = document.querySelector('.characters-list')
 
@@ -353,6 +377,7 @@ const fetchCharacters = async () => {
 fetchCharacters()
 
 
+// ================= ЗАДАНИЕ — FETCH bio.json (ВЫВОД В КОНСОЛЬ) =================
 
 const fetchBio = async () => {
     try {
@@ -372,6 +397,7 @@ const fetchBio = async () => {
 fetchBio()
 
 
+// ================= HOMEWORK 3 — ФОРМА РЕГИСТРАЦИИ (JSON / FormData) =================
 
 const registerForm = document.querySelector('#register_form')
 const agreementCheckbox = document.querySelector('#agreement')
@@ -382,11 +408,12 @@ const showResult = (message, isError = false) => {
     registerResult.style.color = isError ? 'red' : 'lightgreen'
 }
 
+// Отправка данных как application/json
 const sendAsJson = async (form) => {
     try {
         const formData = new FormData(form)
         const data = Object.fromEntries(formData.entries())
-        data.agreement = agreementCheckbox.checked        
+        data.agreement = agreementCheckbox.checked // checkbox не попадает как boolean сам по себе
 
         const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
             method: 'POST',
@@ -409,9 +436,12 @@ const sendAsJson = async (form) => {
     }
 }
 
+// Отправка данных как multipart/form-data
 const sendAsFormData = async (form) => {
     try {
         const formData = new FormData(form)
+        // Content-Type НЕ указываем вручную — браузер сам выставит
+        // multipart/form-data вместе с нужным boundary
 
         const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
             method: 'POST',
@@ -432,13 +462,15 @@ const sendAsFormData = async (form) => {
 }
 
 registerForm.addEventListener('submit', async (event) => {
-    event.preventDefault()    
+    event.preventDefault() // блокируем обычную отправку формы
 
+    // Пока чекбокс согласия не отмечен — запрос вообще не уходит
     if (!agreementCheckbox.checked) {
         showResult('Нужно поставить галочку согласия на обработку данных', true)
         return
     }
 
+    // event.submitter — конкретная кнопка, которая инициировала submit
     const format = event.submitter?.dataset.format
 
     if (format === 'json') {

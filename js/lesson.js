@@ -1,8 +1,10 @@
+// ================= PHONE CHECKER =================
 
 const phoneInput = document.querySelector('#phone_input')
 const phoneButton = document.querySelector('#phone_button')
 const phoneResult = document.querySelector('#phone_result')
 
+// Формат: +996 XXX XX-XX-XX
 const phoneRegex = /^\+996\s\d{3}\s\d{2}-\d{2}-\d{2}$/
 
 phoneButton.onclick = () => {
@@ -24,48 +26,53 @@ phoneButton.onclick = () => {
 }
 
 
+// ================= TAB SLIDER (делегирование событий + classList) =================
 
 const tabItemsBlock = document.querySelector('.tab_content_items')
 const tabItems = document.querySelectorAll('.tab_content_item')
 const tabBlocks = document.querySelectorAll('.tab_content_block')
- 
-let currentTabIndex = 0 
- 
+
+let currentTabIndex = 0 // храним текущий активный таб, чтобы автослайдер знал, откуда продолжать
+
+// изначально показываем только первый блок, остальные прячем
 const showTabBlock = (index) => {
     tabBlocks.forEach((block, i) => {
         block.style.display = i === index ? 'flex' : 'none'
     })
- 
+
     tabItems.forEach((item, i) => {
         item.classList.toggle('tab_content_item_active', i === index)
     })
- 
+
     currentTabIndex = index
 }
- 
+
 showTabBlock(0)
- 
+
+// делегирование событий: один обработчик на родителе вместо
+// назначения обработчика каждой кнопке отдельно
 tabItemsBlock.addEventListener('click', (event) => {
     const clickedItem = event.target.closest('.tab_content_item')
     if (!clickedItem) return
- 
+
     const index = Array.from(tabItems).indexOf(clickedItem)
     showTabBlock(index)
 })
- 
+
+// автоматическое переключение на следующий таб каждые 4 секунды
 setInterval(() => {
     const nextIndex = currentTabIndex < tabItems.length - 1 ? currentTabIndex + 1 : 0
     showTabBlock(nextIndex)
 }, 4000)
 
 
-
+// ================= CONVERTER (som / usd / eur) =================
 
 const somInput = document.querySelector('#som')
 const usdInput = document.querySelector('#usd')
 const eurInput = document.querySelector('#eur')
 
-let rates = null 
+let rates = null // сюда попадут курсы из converter.json
 
 const fetchRates = async () => {
     try {
@@ -117,47 +124,59 @@ eurInput.oninput = () => {
 }
 
 
-
+// ================= CARD SWITCHER =================
 
 const card = document.querySelector('.card')
 const btnPrev = document.querySelector('#btn-prev')
 const btnNext = document.querySelector('#btn-next')
- 
-const cardsData = [
-    { title: 'Совет #1', text: 'let и const почти всегда лучше var' },
-    { title: 'Совет #2', text: 'Стрелочные функции не имеют своего this' },
-    { title: 'Совет #3', text: 'JSON.stringify превращает объект в строку' },
-    { title: 'Совет #4', text: 'Promise.all падает при первой же ошибке' },
-    { title: 'Совет #5', text: 'classList.toggle переключает класс туда-обратно' }
-]
- 
-let cardIndex = 0
- 
-const renderCard = () => {
-    const { title, text } = cardsData[cardIndex]
-    card.innerHTML = `<p>${title}</p><span>${text}</span>`
+
+const TOTAL_POSTS = 100 // всего постов на jsonplaceholder — id от 1 до 100
+let postId = 1
+
+const renderCard = (content) => {
+    card.innerHTML = content
 }
- 
-renderCard()
- 
+
+const fetchPost = async (id) => {
+    renderCard('<p>Загрузка...</p>')
+
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`)
+        }
+
+        const post = await response.json()
+        renderCard(`<p>Пост #${post.id}</p><span>${post.title}</span>`)
+    } catch (error) {
+        console.log('Не удалось загрузить пост:', error.message)
+        renderCard('<p style="color: red;">Не удалось загрузить пост</p>')
+    }
+}
+
+fetchPost(postId)
+
 btnNext.onclick = () => {
-    cardIndex = cardIndex < cardsData.length - 1 ? cardIndex + 1 : 0
-    renderCard()
+    postId = postId < TOTAL_POSTS ? postId + 1 : 1
+    fetchPost(postId)
 }
- 
+
 btnPrev.onclick = () => {
-    cardIndex = cardIndex > 0 ? cardIndex - 1 : cardsData.length - 1
-    renderCard()
+    postId = postId > 1 ? postId - 1 : TOTAL_POSTS
+    fetchPost(postId)
 }
 
 
-
+// ================= WEATHER =================
 
 const cityInput = document.querySelector('.cityName')
 const searchButton = document.querySelector('#search')
 const cityOutput = document.querySelector('.city')
 const tempOutput = document.querySelector('.temp')
 
+// Open-Meteo — бесплатное API без ключа: сначала находим координаты города,
+// потом по ним запрашиваем текущую погоду
 const fetchWeather = async (cityName) => {
     try {
         const geoResponse = await fetch(
